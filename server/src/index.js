@@ -22,7 +22,13 @@ const __dirname = path.resolve()
 const app = express()
 
 // middlewares
-app.use(cors())
+app.use(cors(
+	{
+		origin: [""],
+		methods: ["POST", "PUT", "DELETE", "GET"],
+		credentials: true
+	}
+))
 app.use(express.json())
 
 // start server
