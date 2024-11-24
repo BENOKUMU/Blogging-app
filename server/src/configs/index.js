@@ -1,8 +1,10 @@
 import { createRequire } from "module";
 import { cloudinary } from "./cloudinaryConfig.js";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const require = createRequire(import.meta.url);
-const serviceAccountKey = require("../mern-blogging-website-firebase-adminsdk-flubd-106df6339f.json");
+const serviceAccountKey = require("../firebase.json");
 
 const mongoConfig = {
     connectionUrl: process.env.DB_LOCATION,
