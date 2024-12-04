@@ -31,5 +31,5 @@ jobs:
           username: ${{ secrets.GIT_CPANEL_REACT_USER }}
           password: ${{ secrets.GIT_CPANEL_REACT_PWD }}
           protocol: ftp
-          local-dir: ./server/src/  # Backend files (adjust if needed)
-        #   remote-dir: /home4/thehyper/public_html/blogs/server  # Adjust for your backend path
+          local-dir: ./server/src/  # Backend source files
+        #   remote-dir: /public_html/blogs/server/  # Adjust for your backend path

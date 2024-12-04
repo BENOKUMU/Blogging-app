@@ -33,4 +33,4 @@ jobs:
           password: ${{ secrets.GIT_CPANEL_REACT_PWD }}
           protocol: ftp
           local-dir: ./client/dist/  # Frontend build files
-          # remote-dir: /home4/thehyper/public_html/blogs/client/  # Remote directory on cPanel
+          # remote-dir: /public_html/blogs/client/  # Adjust for your frontend path
