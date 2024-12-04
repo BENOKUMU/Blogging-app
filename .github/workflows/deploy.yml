@@ -9,7 +9,7 @@ jobs:
   # Job for deploying both client and server
   deploy:
     name: 🎉 Deploy Frontend and Backend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       # Step 1: Checkout the latest code from the repository
