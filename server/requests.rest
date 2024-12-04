@@ -129,6 +129,6 @@
 
 # Get all complaints 
 
-GET http://localhost:9001/api/v1/admin/get-reports
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZWU4NzhmNjQwMzc4YTVmYzdlNzRjMCIsImlhdCI6MTcxMDEzMzg5Mn0.v9jLAppJImQFU6-NAp1AxTKTRv5PPpdOZ8mfPOkcvw0
-Content-Type: application/json
+# GET http://localhost:9001/api/v1/admin/get-reports
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZWU4NzhmNjQwMzc4YTVmYzdlNzRjMCIsImlhdCI6MTcxMDEzMzg5Mn0.v9jLAppJImQFU6-NAp1AxTKTRv5PPpdOZ8mfPOkcvw0
+# Content-Type: application/json

@@ -35,67 +35,65 @@ const generateUsername = async (email) => {
 }
 
 export const signup = async (req, res) => {
-	const { fullName, email, password } = req.body
+    const { fullName, email, password } = req.body;
 
-	// validation
-	if (!fullName || fullName.length < 3) {
-		return res.status(403).json({
-			status: 6001,
-			message: "Full name must be at least 3 letter long",
-		})
-	}
-	if (!email) {
-		return res.status(403).json({ status: 6001, message: "Enter email" })
-	}
-	if (!EMAIL_REGEX.test(email)) {
-		return res
-			.status(403)
-			.json({ status: 6001, message: "Email is invalid" })
-	}
-	if (!PASSWORD_REGEX.test(password)) {
-		return res.status(403).json({
-			status: 6001,
-			message:
-				"Password should be 6 to 20 characters long with a numeric,1 lowercase and 1 uppercase letters",
-		})
-	}
+    // validation
+    if (!fullName || fullName.length < 3) {
+        return res.status(403).json({
+            status: 6001,
+            message: "Full name must be at least 3 letters long",
+        });
+    }
+    if (!email) {
+        return res.status(403).json({ status: 6001, message: "Enter email" });
+    }
+    if (!EMAIL_REGEX.test(email)) {
+        return res
+            .status(403)
+            .json({ status: 6001, message: "Email is invalid" });
+    }
+    if (!PASSWORD_REGEX.test(password)) {
+        return res.status(403).json({
+            status: 6001,
+            message:
+                "Password should be 6 to 20 characters long with a numeric, 1 lowercase, and 1 uppercase letter",
+        });
+    }
 
-	// password hashing
-	bcrypt.hash(password, 10, async (error, hashedPassword) => {
-		const username = await generateUsername(email)
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const username = await generateUsername(email);
 
-		// create new user
-		const user = new User({
-			personal_info: {
-				fullName,
-				email,
-				password: hashedPassword,
-				username,
-			},
-		})
+        // create new user
+        const user = new User({
+            personal_info: {
+                fullName,
+                email,
+                password: hashedPassword,
+                username,
+            },
+        });
 
-		user.save()
-			.then((user) => {
-				return res.status(200).json({
-					status: 6000,
-					message: "User created successfully",
-					user: userData(user),
-				})
-			})
-			.catch((error) => {
-				if (error.code === 11000) {
-					return res
-						.status(500)
-						.json({ status: 6001, message: "Email already exist" })
-				}
+        const savedUser = await user.save();
+        return res.status(200).json({
+            status: 6000,
+            message: "User created successfully",
+            user: userData(savedUser),
+        });
 
-				return res.status(500).json({
-					status: 6001,
-					message: error?.message,
-				})
-			})
-	})
-}
+    } catch (error) {
+        if (error.code === 11000) {
+            return res
+                .status(500)
+                .json({ status: 6001, message: "Email already exists" });
+        }
+        return res.status(500).json({
+            status: 6001,
+            message: error?.message,
+        });
+    }
+};
+
 
 export const signin = async (req, res) => {
 	const { email, password } = req?.body
@@ -148,81 +146,57 @@ export const signin = async (req, res) => {
 }
 
 export const googleAuth = async (req, res) => {
-	const { access_token } = req?.body
+    const { access_token } = req?.body;
 
-	getAuth()
-		.verifyIdToken(access_token)
-		.then(async (decodedUser) => {
-			let { email, name, picture } = decodedUser
+    try {
+        const decodedUser = await getAuth().verifyIdToken(access_token);
+        let { email, name, picture } = decodedUser;
+        picture = picture.replace("s96-c", "s384-c");
 
-			picture = picture.replace("s96-c", "s384-c")
+        let user = await User.findOne({ "personal_info.email": email })
+            .select(
+                "personal_info.fullName personal_info.username personal_info.profile_img google_auth"
+            );
 
-			let user = await User.findOne({
-				"personal_info.email": email,
-			})
-				.select(
-					"personal_info.fullName personal_info.username personal_info.profile_img google_auth"
-				)
-				.then((user) => {
-					return user | null
-				})
-				.catch((error) => {
-					return res
-						.status(500)
-						.json({ status: 6001, message: error?.message })
-				})
+        if (user) {
+            if (!user.google_auth) {
+                return res.status(403).json({
+                    status: 6001,
+                    message:
+                        "This email was signed up without google. Please login with password to access the account",
+                });
+            }
+        } else {
+            // Signup logic
+            const username = await generateUsername(email);
 
-			if (user) {
-				// login
-				if (!user.google_auth) {
-					return res.status(403).json({
-						status: 6001,
-						message:
-							"This email was signed up without google. Please login with password to access the account",
-					})
-				}
-			} else {
-				// signup
-				const username = await generateUsername(email)
+            user = new User({
+                personal_info: {
+                    fullName: name,
+                    email,
+                    profile_img: picture,
+                    username,
+                },
+                google_auth: true,
+            });
 
-				user = new User({
-					personal_info: {
-						fullName: name,
-						email,
-						profile_img: picture,
-						username,
-					},
-					google_auth: true,
-				})
+            await user.save();
+        }
 
-				await user
-					.save()
-					.then((user) => {
-						user = user
-					})
-					.catch((error) => {
-						res.status(500).json({
-							status: 6001,
-							message: error?.message,
-						})
-					})
-			}
+        return res.status(200).json({
+            status: 6000,
+            message: "Logged in successfully",
+            user: userData(user),
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: 6001,
+            message:
+                "Failed to authenticate you with this google account. Try with some other google account",
+        });
+    }
+};
 
-			return res.status(200).json({
-				status: 6000,
-				message: "Logged in successfully",
-				user: userData(user),
-			})
-		})
-		.catch((error) => {
-			// console.log(error)
-			return res.status(500).json({
-				status: 6001,
-				message:
-					"Failed to authenticate you with this google account. Try with some other google account",
-			})
-		})
-}
 
 export const changePassword = async (req, res) => {
 	const { currentPassword, newPassword } = req.body

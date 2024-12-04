@@ -20,7 +20,7 @@ const AuthForm = ({ type }) => {
 
     const userAuthThroughApi = (apiRoute, formData) => {
         axios
-            .post(`/api/v1/auth/${apiRoute}`, formData)
+            .post(`/api/v1/auth${apiRoute}`, formData)
             .then((response) => {
                 updateUserData({ type: "LOGIN", payload: response?.data?.user })
             })
@@ -32,7 +32,7 @@ const AuthForm = ({ type }) => {
     const handleSubmit = (event) => {
         event.preventDefault()
 
-        const apiRoute = type === "sign-in" ? "signin" : "signup"
+        const apiRoute = type === "sign-in" ? "/signin" : "signup"
 
         // the `idFormElement` is the id of the form (it is an hack instead of using ref.current)
         const form = new FormData(idFormElement)

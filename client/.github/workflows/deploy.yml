@@ -1,0 +1,53 @@
+name: 🚀 Deploy MERN Website on Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest  # This is fine for most Linux-based environments, consider using windows-latest if you face issues
+
+    steps:
+      - name: 🚚 Checkout Latest Code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: 🔨 Install Dependencies & Build Frontend
+        run: |
+          cd client  # Assuming the frontend is in a 'client' folder (adjust accordingly)
+          npm install
+          npm run build
+
+      - name: 🔨 Build Backend (Optional)
+        run: |
+          cd server  # Assuming the backend is in a 'server' folder (adjust accordingly)
+          npm install
+          npm run build   # Or simply 'npm start' if you just need to run the server
+
+      - name: 📂 Sync Frontend Files to cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.GIT_CPANEL_REACT_SERVER }}
+          username: ${{ secrets.GIT_CPANEL_REACT_USER }}
+          password: ${{ secrets.GIT_CPANEL_REACT_PWD }}
+          protocol: ${{ secrets.GIT_CPANEL_REACT_PROTOCOL }}
+          local-dir: ./client/build  # Make sure this points to the correct build directory for the frontend
+          remote-dir: /public_html    # Adjust the remote path to where you want to deploy
+
+      - name: 📂 Sync Backend Files to cPanel (Optional)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.GIT_CPANEL_REACT_SERVER }}
+          username: ${{ secrets.GIT_CPANEL_REACT_USER }}
+          password: ${{ secrets.GIT_CPANEL_REACT_PWD }}
+          protocol: ${{ secrets.GIT_CPANEL_REACT_PROTOCOL }}
+          local-dir: ./server   # Adjust according to your backend location
+          remote-dir: /home/username/backend  # Adjust to the correct remote backend path
+
