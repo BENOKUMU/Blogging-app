@@ -32,4 +32,4 @@ jobs:
           password: ${{ secrets.GIT_CPANEL_REACT_PWD }}
           protocol: ftp
           local-dir: ./server/  # Backend files (adjust if needed)
-          # remote-dir: /home4/thehyper/public_html/blogs/server  # Adjust for your backend path
+          remote-dir: /home4/thehyper/public_html/blogs/server  # Adjust for your backend path
