@@ -32,4 +32,3 @@ jobs:
           password: ${{ secrets.GIT_CPANEL_REACT_PWD }}
           protocol: ftp
           local-dir: ./server/src/  # Backend source files
-        #   remote-dir: /public_html/blogs/server/  # Adjust for your backend path
