@@ -1,0 +1,58 @@
+name: 🚀 Deploy Full MERN Stack on Push
+
+on:
+  push:
+    branches:
+      - master  # Trigger workflow on push to 'master' branch
+
+jobs:
+  # Job for deploying both client and server
+  deploy:
+    name: 🎉 Deploy Frontend and Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the latest code from the repository
+      - name: 🚚 Checkout Latest Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js (using version 22.11.0 as specified)
+      - name: Use Node.js v22.11.0
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.11.0'
+
+      # Step 3: Install dependencies and build the frontend
+      - name: 🔨 Install Dependencies & Build Frontend
+        run: |
+          cd client  # Navigate to the 'client' folder
+          npm install  # Install dependencies for frontend
+          npm run build  # Generate build files in 'client/dist'
+
+      # Step 4: Install backend dependencies (if needed)
+      - name: 🔨 Install Backend Dependencies
+        run: |
+          cd server  # Navigate to the 'server' folder
+          npm install  # Install dependencies for the backend
+
+      # Step 5: Sync the frontend files (client/dist) to cPanel
+      - name: 📂 Sync Frontend Files to cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.GIT_CPANEL_REACT_SERVER }}
+          username: ${{ secrets.GIT_CPANEL_REACT_USER }}
+          password: ${{ secrets.GIT_CPANEL_REACT_PWD }}
+          protocol: ${{ secrets.GIT_CPANEL_REACT_PROTOCOL }}
+          local-dir: ./client/dist  # Frontend build files
+          # remote-dir: /public_html  # Remote directory on cPanel (or adjust as needed)
+
+      # Step 6: Sync the backend files (server/src) to cPanel or server
+      - name: 📂 Sync Backend Files to cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.GIT_CPANEL_REACT_SERVER }}
+          username: ${{ secrets.GIT_CPANEL_REACT_USER }}
+          password: ${{ secrets.GIT_CPANEL_REACT_PWD }}
+          protocol: ${{ secrets.GIT_CPANEL_REACT_PROTOCOL }}
+          local-dir: ./server/src  # Backend files (adjust if needed)
+          # remote-dir: /home/username/backend  # Remote backend path (adjust as needed)
