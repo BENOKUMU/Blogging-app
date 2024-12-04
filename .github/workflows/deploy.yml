@@ -37,7 +37,7 @@ jobs:
           username: ${{ secrets.GIT_CPANEL_REACT_USER }}
           password: ${{ secrets.GIT_CPANEL_REACT_PWD }}
           protocol: ftp  # Make sure to use 'ftp', 'ftps', or 'ftps-legacy'
-          local-dir: ./client/dist  # Frontend build files
+          local-dir: ./client/dist/  # Frontend build files
           # remote-dir: /public_html/  # Remote directory on cPanel
 
       - name: 📂 Sync Backend Files to cPanel
@@ -47,5 +47,5 @@ jobs:
           username: ${{ secrets.GIT_CPANEL_REACT_USER }}
           password: ${{ secrets.GIT_CPANEL_REACT_PWD }}
           protocol: ftp  # Use the correct protocol here as well
-          local-dir: ./server/src  # Backend files (adjust if needed)
+          local-dir: ./server/src/  # Backend files (adjust if needed)
           # remote-dir: /home/username/backend/  # Adjust for your backend path
