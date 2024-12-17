@@ -1,0 +1,134 @@
+# ======== Signup ========
+
+# POST http://localhost:9001/api/v1/auth/signup
+# Content-Type: application/json
+
+# {
+#     "email": "liviya@example.com",
+#     "password": "Hello123",
+#     "fullName": "Liviya"
+# }
+
+
+# ======== Signin ========
+
+# POST http://localhost:9001/api/v1/auth/signin
+# Content-Type: application/json
+
+# {
+#     "email": "mohammedsh@example.com",
+#     "password": "Hello123"
+# }
+
+
+# ======== Get Upload URL ========
+
+# GET http://localhost:9001/api/v1/blogs/get-upload-url
+
+
+# ======== Crete Blog ========
+
+# POST http://localhost:9001/api/v1/blogs/create
+# Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NTEwMjRiODExNDhmZWFkZGYxMzFiMCIsImlhdCI6MTY5OTgwNzgxOX0.n8Dw7Jj_ENMtE3JESLdp6V4V0TaZVfcD9_PM3PSIFTg
+
+# {
+#     "title": "New Hello",
+#     "banner": "http://example.com/a.png",
+#     "des": "Hellooooo",
+#     "content": {
+#         "blocks": [1, 2]
+#     },
+#     "tags": ["aa", "bb"]
+# }
+
+# =========== Latest Blogs && Trending Blogs =========
+
+# GET http://localhost:9001/api/v1/blogs/trending
+
+# ========= Search Blog =============
+
+# POST http://localhost:9001/api/v1/blogs/search
+# Content-Type: application/json
+
+# {
+#     "tag": "hello"
+# }
+
+
+# =========== Search Users ============
+
+# POST http://localhost:9001/api/v1/users/search
+# Content-Type: application/json
+
+# {
+#     "query": "mohammed"
+# }
+
+# =========== user profile =========
+
+# POST http://localhost:9001/api/v1/users/profile
+# Content-Type: application/json
+
+# {
+#     "username": "hello"
+# }
+
+# =========== get blog ============
+
+# POST http://localhost:9001/api/v1/blogs/get-blog
+
+# {
+#     "blog_id": "10-Essential-JavaScript-Concepts-Every-Developer-Should-KnowhYGDn1A4izUxVFeM0gcoa"
+# }
+
+
+# ======== Change Password ========
+
+# POST http://localhost:9001/api/v1/auth/change-password
+# Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NTEwMjRiODExNDhmZWFkZGYxMzFiMCIsImlhdCI6MTcwOTM1NDQ0Nn0.siWd4rD1FoRyp-QNLkPmth0njtORd5MyPaNJI_uigxA
+
+# {
+#     "currentPassword": "Hello123",
+#     "newPassword": "HelloWorld123"  
+# }
+
+# ======== Update profile_img ========
+
+# POST http://localhost:9001/api/v1/users/update-profile-img
+# Content-Type: application/json
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NTEwMjRiODExNDhmZWFkZGYxMzFiMCIsImlhdCI6MTcwOTM1NDQ0Nn0.siWd4rD1FoRyp-QNLkPmth0njtORd5MyPaNJI_uigxA
+
+# {
+#     "url": "hhh.jpg"
+# }
+
+
+# ======== Get notifications ========
+
+# GET http://localhost:9001/api/v1/notifications/new
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NDYzMDQ0ZGQxODI1ODc4YTI4ZjEyZSIsImlhdCI6MTcwOTUzMTIyNX0.o7-AuZi28nc8UzvQWElXZ-rUMGBzz0a6P-q6lsLNfRU
+
+# ======== Get user blogs ========
+
+# POST http://localhost:9001/api/v1/users/blogs
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZTViZDg2MjJkNDQ3ZDkyMjM4MzdhMyIsImlhdCI6MTcwOTY5NTMzMH0.bPKLzGPZOCAh5QcDYU_ygGJ9kEv9Lh_iqxdQ50ez_UY
+# Content-Type: application/json
+
+# {
+#     "page": 1,
+#     "draft": false
+# }
+
+# Get all users (Admin)
+
+# GET http://localhost:9001/api/v1/admin/all-users
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZWU4NzhmNjQwMzc4YTVmYzdlNzRjMCIsImlhdCI6MTcxMDEzMzg5Mn0.v9jLAppJImQFU6-NAp1AxTKTRv5PPpdOZ8mfPOkcvw0
+# Content-Type: application/json
+
+# Get all complaints 
+
+GET http://localhost:9001/api/v1/admin/get-reports
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZWU4NzhmNjQwMzc4YTVmYzdlNzRjMCIsImlhdCI6MTcxMDEzMzg5Mn0.v9jLAppJImQFU6-NAp1AxTKTRv5PPpdOZ8mfPOkcvw0
+Content-Type: application/json

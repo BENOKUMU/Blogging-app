@@ -43,6 +43,15 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccountKey),
 });
 
+// Root route to test server
+app.get("/", (req, res) => {
+  res.send("Welcome to the backend server!");
+});
+
+app.get("/hello", (req, res) => {
+  res.send("Hello");
+});
+
 // API routes
 app.use("/api/v1/auth/", authRouter);
 app.use("/api/v1/blogs/", blogsRouter);
