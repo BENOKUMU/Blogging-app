@@ -45,7 +45,7 @@ admin.initializeApp({
 
 // Root route to test server
 app.get("/", (req, res) => {
-  res.send("Welcome to the backend server!");
+  res.send("Welcome to the backend server! ❤️");
 });
 
 app.get("/hello", (req, res) => {

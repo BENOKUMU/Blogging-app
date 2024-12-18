@@ -24,5 +24,6 @@ dist-ssr
 *.sw?
 
 .github
-
+server.zip
+dist.zip
 .env
