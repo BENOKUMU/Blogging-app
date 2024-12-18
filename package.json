@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"main": "server/src/index.js",
 	"license": "MIT",
-	"type": "module",
+	"type": "commonjs",
 	"scripts": {
 		"dev": "nodemon server/src/index.js",
 		"start": "node server/src/index.js",
