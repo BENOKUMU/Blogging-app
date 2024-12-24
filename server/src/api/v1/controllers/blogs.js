@@ -1,16 +1,20 @@
-import { nanoid } from "nanoid"
+// const { nanoid } = require("nanoid");
 
 // models
-import Blog from "../../../models/Blog.js"
-import User from "../../../models/User.js"
-import Notification from "../../../models/Notification.js"
-import Comment from "../../../models/Comment.js"
+const Blog = require("../../../models/Blog.js");
+const User = require("../../../models/User.js");
+const Notification = require("../../../models/Notification.js");
+const Comment = require("../../../models/Comment.js");
 
 // configs
-// import { s3 } from "../../../configs/index.js"
+// const { s3 } = require("../../../configs/index.js");
 
+const cloudinary = require("cloudinary").v2;
 
-import { v2 as cloudinary } from "cloudinary";
+const loadNanoid = async () => {
+    const { nanoid } = await import("nanoid");
+    return nanoid;
+};
 
 // Configure Cloudinary
 cloudinary.config({
@@ -21,6 +25,7 @@ cloudinary.config({
 
 const generateUploadUrl = async () => {
     try {
+		const nanoid = await loadNanoid();
         const date = new Date();
         const imageName = `${nanoid()}-${date.getTime()}.jpeg`;
 
@@ -59,7 +64,7 @@ const generateUploadUrl = async () => {
 };
 
 
-export const getUploadUrl = async (req, res) => {
+const getUploadUrl = async (req, res) => {
 	generateUploadUrl()
 		.then((url) =>
 			res.status(200).json({
@@ -75,7 +80,7 @@ export const getUploadUrl = async (req, res) => {
 		)
 }
 
-export const createBlog = async (req, res) => {
+const createBlog = async (req, res) => {
 	/**
 	 * id => blogId from the frontend
 	 */
@@ -202,7 +207,7 @@ export const createBlog = async (req, res) => {
 	}
 }
 
-export const latestBlogs = async (req, res) => {
+const latestBlogs = async (req, res) => {
 	const { page } = req.body
 
 	const maxLimit = 5
@@ -230,7 +235,7 @@ export const latestBlogs = async (req, res) => {
 		})
 }
 
-export const latestBlogsCount = async (req, res) => {
+const latestBlogsCount = async (req, res) => {
 	/**
 	 * countDocuments() will give the total count of document
 	 * present in the collection
@@ -250,7 +255,7 @@ export const latestBlogsCount = async (req, res) => {
 		})
 }
 
-export const trendingBlogs = async (req, res) => {
+const trendingBlogs = async (req, res) => {
 	Blog.find({ draft: false })
 		.populate(
 			"author",
@@ -277,7 +282,7 @@ export const trendingBlogs = async (req, res) => {
 		})
 }
 
-export const searchBlogs = async (req, res) => {
+const searchBlogs = async (req, res) => {
 	/**
 	 * $ne: `eliminate_blog` => this will find only blog id not equals to `eliminate_blog`
 	 */
@@ -322,7 +327,7 @@ export const searchBlogs = async (req, res) => {
 		})
 }
 
-export const searchBlogsCount = async (req, res) => {
+const searchBlogsCount = async (req, res) => {
 	const { tag, author, query } = req.body
 
 	let findQuery
@@ -350,7 +355,7 @@ export const searchBlogsCount = async (req, res) => {
 		})
 }
 
-export const getBlog = async (req, res) => {
+const getBlog = async (req, res) => {
 	/**
 	 * `$inc => incrementing something`
 	 */
@@ -407,7 +412,7 @@ export const getBlog = async (req, res) => {
 		})
 }
 
-export const likeBlog = async (req, res) => {
+const likeBlog = async (req, res) => {
 	const user_id = req.user
 
 	const { _id, isUserLiked } = req.body
@@ -454,7 +459,7 @@ export const likeBlog = async (req, res) => {
 	})
 }
 
-export const isUserLiked = async (req, res) => {
+const isUserLiked = async (req, res) => {
 	/**
 	 * request for sending information about currently logged
 	 * user is liked the blog post or not
@@ -479,7 +484,7 @@ export const isUserLiked = async (req, res) => {
 		})
 }
 
-export const deleteBlog = (req, res) => {
+const deleteBlog = (req, res) => {
 	const user_id = req.user
 
 	const { blog_id } = req.body
@@ -521,3 +526,5 @@ export const deleteBlog = (req, res) => {
 			})
 		})
 }
+
+module.exports = { generateUploadUrl, getUploadUrl, createBlog, latestBlogs, latestBlogsCount, trendingBlogs, searchBlogs, searchBlogsCount, getBlog, likeBlog, isUserLiked, deleteBlog };

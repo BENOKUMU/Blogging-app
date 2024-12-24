@@ -1,8 +1,9 @@
-import express from "express"
+const express = require('express');
 
 // middlewares
-import { verifyJWT } from "../../../middlewares/index.js"
-import {
+const { verifyJWT } = require("../../../middlewares/index.js");
+
+const {
     getUploadUrl,
     createBlog,
     latestBlogs,
@@ -14,26 +15,20 @@ import {
     likeBlog,
     isUserLiked,
     deleteBlog,
-} from "../controllers/blogs.js"
+} = require("../controllers/blogs.js");
 
-const router = express.Router()
+const router = express.Router();
 
-router.get("/get-upload-url", verifyJWT, getUploadUrl)
-router.post("/create", verifyJWT, createBlog)
+router.get("/get-upload-url", verifyJWT, getUploadUrl);
+router.post("/create", verifyJWT, createBlog);
+router.get("/latest", latestBlogs);
+router.get("/trending", trendingBlogs);
+router.get("/search", searchBlogs);
+router.get("/latest-count", latestBlogsCount);
+router.get("/search-count", searchBlogsCount);
+router.get("/:id", getBlog);
+router.post("/like", verifyJWT, likeBlog);
+router.get("/is-liked/:id", verifyJWT, isUserLiked);
+router.delete("/:id", verifyJWT, deleteBlog);
 
-router.post("/search", searchBlogs)
-router.post("/search/total-posts", searchBlogsCount)
-
-router.post("/latest", latestBlogs)
-router.post("/latest/total-posts", latestBlogsCount)
-
-router.get("/trending", trendingBlogs)
-
-router.post("/get-blog", getBlog)
-
-router.post("/like-blog", verifyJWT, likeBlog)
-router.post("/is-user-liked", verifyJWT, isUserLiked)
-
-router.post("/delete", verifyJWT, deleteBlog)
-
-export default router
+module.exports = router;

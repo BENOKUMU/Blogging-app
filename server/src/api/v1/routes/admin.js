@@ -1,24 +1,24 @@
-import express from "express"
+const express = require('express');
 
 // middlewares
-import { verifyJWT } from "../../../middlewares/index.js"
+const { verifyJWT } = require("../../../middlewares/index.js");
 
-import {
-	adminLogin,
-	getAllUsers,
-	deleteUser,
-	deleteBlog,
-	addComplaint,
-	getComplaints,
-} from "../controllers/admin.js"
+const {
+    adminLogin,
+    getAllUsers,
+    deleteUser,
+    deleteBlog,
+    addComplaint,
+    getComplaints,
+} = require("../controllers/admin.js");
 
-const router = express.Router()
+const router = express.Router();
 
-router.post("/login", adminLogin)
-router.get("/all-users", verifyJWT, getAllUsers)
-router.post("/delete-user", verifyJWT, deleteUser)
-router.post("/delete-blog", verifyJWT, deleteBlog)
-router.post("/add-report", verifyJWT, addComplaint)
-router.get("/get-reports", verifyJWT, getComplaints)
+router.post("/login", adminLogin);
+router.get("/all-users", verifyJWT, getAllUsers);
+router.post("/delete-user", verifyJWT, deleteUser);
+router.post("/delete-blog", verifyJWT, deleteBlog);
+router.post("/add-report", verifyJWT, addComplaint);
+router.get("/get-reports", verifyJWT, getComplaints);
 
-export default router
+module.exports = router;

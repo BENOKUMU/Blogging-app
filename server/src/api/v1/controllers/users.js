@@ -1,48 +1,48 @@
-import User from "../../../models/User.js"
-import Blog from "../../../models/Blog.js"
+const User = require('../../../models/User.js');
+const Blog = require("../../../models/Blog.js");
 
-export const searchUsers = async (req, res) => {
-	const { query } = req.body
+const searchUsers = async (req, res) => {
+    const { query } = req.body;
 
-	User.find({ "personal_info.username": new RegExp(query, "i") })
-		.limit(50)
-		.select(
-			"personal_info.fullName personal_info.username personal_info.profile_img -_id"
-		)
-		.then((users) => {
-			return res.status(200).json({
-				status: 6000,
-				users,
-			})
-		})
-		.catch((error) => {
-			return res.status(500).json({
-				status: 6001,
-				message: error?.message,
-			})
-		})
-}
+    User.find({ "personal_info.username": new RegExp(query, "i") })
+        .limit(50)
+        .select(
+            "personal_info.fullName personal_info.username personal_info.profile_img -_id"
+        )
+        .then((users) => {
+            return res.status(200).json({
+                status: 6000,
+                users,
+            });
+        })
+        .catch((error) => {
+            return res.status(500).json({
+                status: 6001,
+                message: error?.message,
+            });
+        });
+};
 
-export const userProfile = async (req, res) => {
-	const { username } = req.body
+const userProfile = async (req, res) => {
+    const { username } = req.body;
 
-	User.findOne({ "personal_info.username": username })
-		.select("-personal_info.password -google_auth -updatedAt -blogs")
-		.then((user) => {
-			res.status(200).json({
-				status: 6000,
-				user,
-			})
-		})
-		.catch((error) => {
-			res.status(500).json({
-				status: 6001,
-				message: error?.message,
-			})
-		})
-}
+    User.findOne({ "personal_info.username": username })
+        .select("-personal_info.password -google_auth -updatedAt -blogs")
+        .then((user) => {
+            res.status(200).json({
+                status: 6000,
+                user,
+            });
+        })
+        .catch((error) => {
+            return res.status(500).json({
+                status: 6001,
+                message: error?.message,
+            });
+        });
+};
 
-export const updateProfileImg = async (req, res) => {
+const updateProfileImg = async (req, res) => {
 	console.log("Hello")
 	const { url } = req.body
 
@@ -64,7 +64,7 @@ export const updateProfileImg = async (req, res) => {
 		})
 }
 
-export const updateProfile = async (req, res) => {
+const updateProfile = async (req, res) => {
 	const { username, bio, social_links } = req.body
 
 	const bioLimit = 150
@@ -145,7 +145,7 @@ export const updateProfile = async (req, res) => {
 		})
 }
 
-export const getUserBlogs = (req, res) => {
+const getUserBlogs = (req, res) => {
 	const user_id = req.user
 
 	const { page, draft, query, deletedDocCount } = req.body
@@ -177,7 +177,7 @@ export const getUserBlogs = (req, res) => {
 		})
 }
 
-export const getUserBlogsCount = (req, res) => {
+const getUserBlogsCount = (req, res) => {
 	const user_id = req.user
 
 	const { draft, query } = req.body
@@ -200,3 +200,5 @@ export const getUserBlogsCount = (req, res) => {
 			})
 		})
 }
+
+module.exports = { searchUsers, userProfile, updateProfileImg, updateProfile, getUserBlogs, getUserBlogsCount };

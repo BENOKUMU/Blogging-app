@@ -1,4 +1,5 @@
-import mongoose, { Schema } from "mongoose"
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 let profile_imgs_name_list = [
     "Garfield",
@@ -21,14 +22,14 @@ let profile_imgs_name_list = [
     "Jack",
     "Felix",
     "Kiki",
-]
+];
 let profile_imgs_collections_list = [
     "notionists-neutral",
     "adventurer-neutral",
     "fun-emoji",
-]
+];
 
-const userSchema = mongoose.Schema(
+const userSchema = new Schema(
     {
         personal_info: {
             fullName: {
@@ -129,6 +130,6 @@ const userSchema = mongoose.Schema(
             createdAt: "joinedAt",
         },
     }
-)
+);
 
-export default mongoose.model("users", userSchema)
+module.exports = mongoose.model("User", userSchema);

@@ -7,7 +7,7 @@ export default defineConfig({
 	server: {
 		proxy: {
 			"/api/v1": {
-				// target: "http://localhost:9000",
+				target: "https://blogging-app-n5m9.onrender.com",
 			},
 		},
 	},

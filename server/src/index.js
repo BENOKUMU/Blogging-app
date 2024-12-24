@@ -1,23 +1,23 @@
-import path from "node:path";
-import express from "express";
-import cors from "cors";
-import "dotenv/config";
-import admin from "firebase-admin";
+const path = require("node:path");
+const express = require("express");
+const cors = require("cors");
+require("dotenv/config");
+const admin = require("firebase-admin");
 
-import Server from "./server.js";
+const Server = require("./server.js");
 
 // configs
-import { serviceAccountKey } from "./configs/index.js";
+const { serviceAccountKey } = require("./configs/index.js");
 
 // routers
-import authRouter from "./api/v1/routes/auth.js";
-import blogsRouter from "./api/v1/routes/blogs.js";
-import usersRouter from "./api/v1/routes/users.js";
-import commentsRouter from "./api/v1/routes/comments.js";
-import notificationRouter from "./api/v1/routes/notification.js";
-import adminRouter from "./api/v1/routes/admin.js";
+const authRouter = require("./api/v1/routes/auth.js");
+const blogsRouter = require("./api/v1/routes/blogs.js");
+const usersRouter = require("./api/v1/routes/users.js");
+const commentsRouter = require("./api/v1/routes/comments.js");
+const notificationRouter = require("./api/v1/routes/notification.js");
+const adminRouter = require("./api/v1/routes/admin.js");
 
-const __dirname = path.resolve();
+// const __dirname = path.resolve();
 
 const app = express();
 

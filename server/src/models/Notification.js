@@ -1,6 +1,7 @@
-import mongoose, { Schema } from "mongoose"
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const notificationSchema = mongoose.Schema(
+const notificationSchema = new Schema(
     {
         type: {
             type: String,
@@ -39,9 +40,7 @@ const notificationSchema = mongoose.Schema(
             default: false,
         },
     },
-    {
-        timestamps: true,
-    }
-)
+    { timestamps: true }
+);
 
-export default mongoose.model("notification", notificationSchema)
+module.exports = mongoose.model("Notification", notificationSchema);

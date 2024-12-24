@@ -1,15 +1,15 @@
-import express from "express"
+const express = require('express');
 
 // middlewares
-import { verifyJWT } from "../../../middlewares/index.js"
+const { verifyJWT } = require("../../../middlewares/index.js");
 
-import { addComment, getComments, getReplies, deleteComment } from "../controllers/comments.js"
+const { addComment, getComments, getReplies, deleteComment } = require("../controllers/comments.js");
 
-const router = express.Router()
+const router = express.Router();
 
-router.post("/add", verifyJWT, addComment)
-router.post("/get", getComments)
-router.post("/get/replies", getReplies)
-router.post("/delete", verifyJWT, deleteComment)
+router.post("/add", verifyJWT, addComment);
+router.post("/get", getComments);
+router.post("/get/replies", getReplies);
+router.post("/delete", verifyJWT, deleteComment);
 
-export default router
+module.exports = router;

@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from "cloudinary";
+const cloudinary = require('cloudinary').v2;
 
 // Configure Cloudinary
 cloudinary.config({
@@ -7,4 +7,4 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export { cloudinary };
+module.exports = { cloudinary };

@@ -1,14 +1,14 @@
-import express from "express"
+const express = require('express');
 
 // middlewares
-import { verifyJWT } from "../../../middlewares/index.js"
+const { verifyJWT } = require("../../../middlewares/index.js");
 
-import { newNotifications, notifications, allNotificationsCount } from "../controllers/notification.js"
+const { newNotifications, notifications, allNotificationsCount } = require("../controllers/notification.js");
 
-const router = express.Router()
+const router = express.Router();
 
-router.get("/new", verifyJWT, newNotifications)
-router.post("", verifyJWT, notifications)
-router.post("/count", verifyJWT, allNotificationsCount)
+router.get("/new", verifyJWT, newNotifications);
+router.post("", verifyJWT, notifications);
+router.post("/count", verifyJWT, allNotificationsCount);
 
-export default router
+module.exports = router;

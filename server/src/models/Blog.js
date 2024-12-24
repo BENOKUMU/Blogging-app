@@ -1,6 +1,7 @@
-import mongoose, { Schema } from "mongoose"
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const blogSchema = mongoose.Schema(
+const blogSchema = new Schema(
     {
         blog_id: {
             type: String,
@@ -60,11 +61,7 @@ const blogSchema = mongoose.Schema(
             default: false,
         },
     },
-    {
-        timestamps: {
-            createdAt: "publishedAt",
-        },
-    }
+    { timestamps: true }
 );
 
-export default mongoose.model("blogs", blogSchema)
+module.exports = mongoose.model("Blog", blogSchema);

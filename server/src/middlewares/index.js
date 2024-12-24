@@ -1,4 +1,5 @@
-import { verifyJWT } from "./verifyJWT.js"
+const verifyJWT = require("./verifyJWT.js");
 
-
-export { verifyJWT }
+module.exports = {
+    verifyJWT
+};

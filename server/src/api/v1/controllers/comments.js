@@ -1,9 +1,9 @@
 // models
-import Comment from "../../../models/Comment.js"
-import Blog from "../../../models/Blog.js"
-import Notification from "../../../models/Notification.js"
+const Comment = require("../../../models/Comment.js");
+const Blog = require("../../../models/Blog.js");
+const Notification = require("../../../models/Notification.js");
 
-export const addComment = (req, res) => {
+const addComment = (req, res) => {
 	const user_id = req.user
 
 	const { blog_id, comment, blog_author, replying_to, notification_id } =
@@ -119,7 +119,7 @@ export const addComment = (req, res) => {
 	})
 }
 
-export const getComments = async (req, res) => {
+const getComments = async (req, res) => {
 	const { blog_id, skip } = req.body
 
 	const maxLimit = 5
@@ -149,7 +149,7 @@ export const getComments = async (req, res) => {
 		})
 }
 
-export const getReplies = async (req, res) => {
+const getReplies = async (req, res) => {
 	const { _id, skip } = req.body
 
 	const maxLimit = 5
@@ -230,7 +230,7 @@ function deleteComments(_id) {
 		})
 }
 
-export const deleteComment = (req, res) => {
+const deleteComment = (req, res) => {
 	const user_id = req.user
 
 	const { _id } = req.body
@@ -258,3 +258,5 @@ export const deleteComment = (req, res) => {
 			console.log("Comment finding error", error)
 		})
 }
+
+module.exports = { addComment, getComments, getReplies, deleteComment };
