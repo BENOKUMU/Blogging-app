@@ -2,7 +2,7 @@ const { cloudinary } = require("./cloudinaryConfig.js");
 const dotenv = require('dotenv');
 dotenv.config();
 
-const serviceAccountKey = require("../firebase.json");
+const serviceAccountKey = require("./firebase.js");
 
 const mongoConfig = {
     connectionUrl: process.env.DB_LOCATION,
