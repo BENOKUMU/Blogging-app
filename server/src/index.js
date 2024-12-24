@@ -45,7 +45,7 @@ admin.initializeApp({
 
 // Root route to test server
 app.get("/", (req, res) => {
-  res.send("Welcome to the backend server! ❤️");
+  res.send("Welcome to the backend server!");
 });
 
 app.get("/hello", (req, res) => {
@@ -62,11 +62,12 @@ app.use("/api/v1/admin/", adminRouter);
 
 // Serve static files in production
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/client/dist")));
+  const __dirname = path.resolve(); // Ensure __dirname is defined
+  app.use(express.static(path.join(__dirname, "client", "dist")));
 
   // Catch-all route for single-page apps (SPA)
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
+    res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
   });
 }
 
