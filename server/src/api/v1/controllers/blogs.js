@@ -1,18 +1,20 @@
-// Import the necessary modules
-const crypto = require('crypto');
+// const { nanoid } = require("nanoid");
 
-// Models
+// models
 const Blog = require("../../../models/Blog.js");
 const User = require("../../../models/User.js");
 const Notification = require("../../../models/Notification.js");
 const Comment = require("../../../models/Comment.js");
 
-// Configs
+// configs
+// const { s3 } = require("../../../configs/index.js");
+
 const cloudinary = require("cloudinary").v2;
 
-// Helper function to generate a unique ID using crypto
-const generateUniqueId = (input) => 
-    crypto.createHash('sha256').update(input).digest('hex').substring(0, 16); // Generates a 16-character hash
+const loadNanoid = async () => {
+    const { nanoid } = await import("nanoid");
+    return nanoid;
+};
 
 // Configure Cloudinary
 cloudinary.config({
@@ -23,8 +25,9 @@ cloudinary.config({
 
 const generateUploadUrl = async () => {
     try {
+		const nanoid = await loadNanoid();
         const date = new Date();
-        const imageName = `${generateUniqueId(`${date.getTime()}-${Math.random()}`)}-${date.getTime()}.jpeg`;
+        const imageName = `${nanoid()}-${date.getTime()}.jpeg`;
 
         // Generate a Cloudinary upload preset if needed
         const options = {
@@ -78,122 +81,131 @@ const getUploadUrl = async (req, res) => {
 }
 
 const createBlog = async (req, res) => {
-    const authorId = req.user.id;
-    let { title, content, des, tags, banner, draft, id } = req?.body;
+	/**
+	 * id => blogId from the frontend
+	 */
 
-    if (!title) {
-        return res.status(403).json({
-            status: 6001,
-            message: "You must provide a title to publish the blog",
-        });
-    }
+	const authorId = req.user
 
-    if (!draft) {
-        if (!des || des.length > 200) {
-            return res.status(403).json({
-                status: 6001,
-                message:
-                    "You must provide blog description under 200 characters",
-            });
-        }
+	let { title, content, des, tags, banner, draft, id } = req?.body
 
-        if (!banner) {
-            return res.status(403).json({
-                status: 6001,
-                message: "You must provide a banner to publish it",
-            });
-        }
+	if (!title) {
+		return res.status(403).json({
+			status: 6001,
+			message: "You must provide a title to publish the blog",
+		})
+	}
 
-        if (!content.blocks.length) {
-            return res.status(403).json({
-                status: 6001,
-                message: "There must be some blog content to publish it",
-            });
-        }
+	if (!draft) {
+		if (!des || des.length > 200) {
+			return res.status(403).json({
+				status: 6001,
+				message:
+					"You must provide blog description under 200 characters",
+			})
+		}
 
-        if (!tags || tags.length > 10) {
-            return res.status(403).json({
-                status: 6001,
-                message:
-                    "Provide tags in order to publish the blog, Maximum 10",
-            });
-        }
-    }
+		if (!banner) {
+			return res.status(403).json({
+				status: 6001,
+				message: "You must provide a banner to publish it",
+			})
+		}
 
-    tags = tags && tags.map((tag) => tag.toLowerCase());
+		if (!content.blocks.length) {
+			return res.status(403).json({
+				status: 6001,
+				message: "There must be some blog content to publish it",
+			})
+		}
 
-    // Slugify the title + unique hash for blog_id
-    const blog_id =
-        id ||
-        title
-            .replace(/[^a-zA-Z0-9]/g, " ")
-            .replace(/\s+/g, "-")
-            .trim() + generateUniqueId(`${title}-${Date.now()}`);
+		if (!tags || tags.length > 10) {
+			return res.status(403).json({
+				status: 6001,
+				message:
+					"Provide tags in order to publish the blog, Maximum 10",
+			})
+		}
+	}
 
-    if (id) {
-        Blog.findOneAndUpdate(
-            { blog_id },
-            { title, des, banner, content, tags, draft: draft ? draft : false }
-        )
-            .then(() => {
-                res.status(200).json({
-                    status: 6000,
-                    message: "Successfully updated",
-                    blogId: blog_id,
-                });
-            })
-            .catch((error) => {
-                res.status(500).json({
-                    status: 6001,
-                    message: error?.message,
-                });
-            });
-    } else {
-        const blog = new Blog({
-            title,
-            des,
-            content,
-            tags,
-            banner,
-            author: authorId,
-            blog_id,
-            draft: Boolean(draft), // the boolean() will help set correct value
-        });
+	tags = tags && tags.map((tag) => tag.toLowerCase())
 
-        blog.save()
-            .then((blog) => {
-                let incrementVal = draft ? 0 : 1;
+	// slugify the title + unique id
+	const blog_id =
+		id ||
+		title
+			.replace(/[^a-zA-Z0-9]/g, " ")
+			.replace(/\s+/g, "-")
+			.trim() + nanoid()
 
-                // Update the User model to increment the total_posts count and push the new blog post in user blogs
-                User.findOneAndUpdate(
-                    { _id: authorId },
-                    {
-                        $inc: { "account_info.total_posts": incrementVal },
-                        $push: { blogs: blog._id },
-                    }
-                )
-                    .then((user) => {
-                        res.status(200).json({
-                            status: 6000,
-                            message: "Successfully created",
-                            blogId: blog.blog_id,
-                        });
-                    })
-                    .catch((error) => {
-                        res.status(500).json({
-                            status: 6001,
-                            message: "Failed to update the total post count",
-                        });
-                    });
-            })
-            .catch((error) => {
-                return res.status(500).json({
-                    status: 6001,
-                    message: error?.message,
-                });
-            });
-    }
-};
+	if (id) {
+		Blog.findOneAndUpdate(
+			{ blog_id },
+			{ title, des, banner, content, tags, draft: draft ? draft : false }
+		)
+			.then(() => {
+				res.status(200).json({
+					status: 6000,
+					message: "Successfully updated",
+					blogId: blog_id,
+				})
+			})
+			.catch((error) => {
+				res.status(500).json({
+					status: 6001,
+					message: error?.message,
+				})
+			})
+	} else {
+		const blog = new Blog({
+			title,
+			des,
+			content,
+			tags,
+			banner,
+			author: authorId,
+			blog_id,
+			draft: Boolean(draft), // the boolean() will helps set correct value
+		})
+
+		blog.save()
+			.then((blog) => {
+				let incrementVal = draft ? 0 : 1
+
+				/**
+				 * update the User model to
+				 * increment the total_posts count and
+				 * push the new blog post int user blogs
+				 */
+				User.findOneAndUpdate(
+					{ _id: authorId },
+					{
+						$inc: { "account_info.total_posts": incrementVal },
+						$push: { blogs: blog._id },
+					}
+				)
+					.then((user) => {
+						res.status(200).json({
+							status: 6000,
+							message: "Successfully created",
+							blogId: blog.blog_id,
+						})
+					})
+					.catch((error) => {
+						res.status(500).json({
+							status: 6001,
+							message: "Failed to update the total post count",
+						})
+					})
+			})
+			.catch((error) => {
+				return res.status(500).json({
+					status: 6001,
+					message: error?.message,
+				})
+			})
+	}
+}
 
 const latestBlogs = async (req, res) => {
 	const { page } = req.body

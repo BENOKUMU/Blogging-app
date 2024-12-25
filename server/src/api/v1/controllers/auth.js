@@ -1,16 +1,20 @@
 const bcrypt = require("bcrypt");
+// const { nanoid } = require("nanoid");
 const jwt = require("jsonwebtoken");
 const { getAuth } = require("firebase-admin/auth");
-const crypto = require("crypto");
 
-// Config
+// config
 const { jwtTokenSecret } = require("../../../configs");
-// Utils
+// utils
 const { EMAIL_REGEX, PASSWORD_REGEX } = require("../../../utils");
-// Models
+// models
 const User = require("../../../models/User");
 
-// Helper function to create user data for response
+const loadNanoid = async () => {
+    const { nanoid } = await import("nanoid");
+    return nanoid;
+};
+
 const userData = (user) => {
     const access_token = jwt.sign({ id: user?._id }, jwtTokenSecret);
     return {
@@ -21,25 +25,21 @@ const userData = (user) => {
     };
 };
 
-// Helper function to generate a unique username
 const generateUsername = async (email) => {
-    const usernameBase = email.split("@")[0];
-    const hash = crypto.createHash("sha256").update(email).digest("hex").slice(0, 5); // 5-character hash
+    let username = email.split("@")[0];
 
-    let username = `${usernameBase}${hash}`;
-    const isUsernameExists = await User.exists({
+	const nanoid = await loadNanoid();
+    const isUsername = await User.exists({
         "personal_info.username": username,
-    });
+    }).then((result) => result);
 
-    if (isUsernameExists) {
-        // If there's still a conflict, hash the existing username to create a new one
-        username = `${usernameBase}${crypto.createHash("sha256").update(username).digest("hex").slice(0, 5)}`;
-    }
+    console.log("isUsername: ", isUsername);
+
+    isUsername ? (username += nanoid().substring(0, 5)) : username;
 
     return username;
 };
 
-// Signup function
 const signup = async (req, res) => {
     const { fullName, email, password } = req.body;
 
@@ -84,6 +84,7 @@ const signup = async (req, res) => {
             message: "User created successfully",
             user: userData(savedUser),
         });
+
     } catch (error) {
         if (error.code === 11000) {
             return res
@@ -97,51 +98,56 @@ const signup = async (req, res) => {
     }
 };
 
-// Signin function
 const signin = async (req, res) => {
     const { email, password } = req?.body;
 
-    try {
-        const user = await User.findOne({ "personal_info.email": email });
-
-        if (!user) {
-            return res.status(403).json({
-                status: 6001,
-                message: "No user found with this email",
-            });
-        }
-
-        if (!user.google_auth) {
-            const isPasswordValid = await bcrypt.compare(
-                password,
-                user.personal_info.password
-            );
-
-            if (!isPasswordValid) {
+    User.findOne({ "personal_info.email": email })
+        .then((user) => {
+            if (!user) {
                 return res.status(403).json({
                     status: 6001,
-                    message: "Password is incorrect",
+                    message: "No user found with this email",
                 });
             }
 
-            return res.status(200).json({
-                status: 6000,
-                message: "Logged in successfully",
-                user: userData(user),
-            });
-        } else {
-            return res.status(403).json({
-                status: 6001,
-                message:
-                    "Account was created using Google. Try logging in with Google.",
-            });
-        }
-    } catch (error) {
-        return res.status(500).json({ status: 6001, error: error?.message });
-    }
+            if (!user.google_auth) {
+                bcrypt.compare(
+                    password,
+                    user.personal_info.password,
+                    (error, data) => {
+                        if (error) {
+                            return res.status(403).json({
+                                status: 6001,
+                                message: "Error please try again",
+                            });
+                        }
+                        if (!data) {
+                            return res.status(403).json({
+                                status: 6001,
+                                message: "Password is incorrect",
+                            });
+                        } else {
+                            return res.status(200).json({
+                                status: 6000,
+                                message: "Logged in successfully",
+                                user: userData(user),
+                            });
+                        }
+                    }
+                );
+            } else {
+                return res.status(403).json({
+                    status: 6001,
+                    message:
+                        "Account was created using google. Try logging with google.",
+                });
+            }
+        })
+        .catch((error) => {
+            return res.status(500).json({ status: 6001, error: error?.message });
+        });
 };
 
-// Google Authentication
 const googleAuth = async (req, res) => {
     const { access_token } = req?.body;
 
@@ -150,16 +156,17 @@ const googleAuth = async (req, res) => {
         let { email, name, picture } = decodedUser;
         picture = picture.replace("s96-c", "s384-c");
 
-        let user = await User.findOne({ "personal_info.email": email }).select(
-            "personal_info.fullName personal_info.username personal_info.profile_img google_auth"
-        );
+        let user = await User.findOne({ "personal_info.email": email })
+            .select(
+                "personal_info.fullName personal_info.username personal_info.profile_img google_auth"
+            );
 
         if (user) {
             if (!user.google_auth) {
                 return res.status(403).json({
                     status: 6001,
                     message:
-                        "This email was signed up without Google. Please login with a password to access the account",
+                        "This email was signed up without google. Please login with password to access the account",
                 });
             }
         } else {
@@ -187,12 +194,11 @@ const googleAuth = async (req, res) => {
         return res.status(500).json({
             status: 6001,
             message:
-                "Failed to authenticate you with this Google account. Try with another Google account",
+                "Failed to authenticate you with this google account. Try with some other google account",
         });
     }
 };
 
-// Change Password
 const changePassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
@@ -203,48 +209,67 @@ const changePassword = async (req, res) => {
         return res.status(403).json({
             status: 6001,
             message:
-                "Password should be 6 to 20 characters long with a numeric, 1 lowercase, and 1 uppercase letter",
+                "Password should be 6 to 20 characters long with a numeric,1 lowercase and 1 uppercase letters",
         });
     }
 
-    try {
-        const user = await User.findOne({ _id: req.user });
+    User.findOne({ _id: req.user })
+        .then((user) => {
+            if (user.google_auth) {
+                return res.status(403).json({
+                    status: 6001,
+                    message:
+                        "You can't change the password because you logged in through google",
+                });
+            }
 
-        if (user.google_auth) {
-            return res.status(403).json({
+            bcrypt.compare(
+                currentPassword,
+                user.personal_info.password,
+                (error, result) => {
+                    if (error) {
+                        return res.status(500).json({
+                            status: 6001,
+                            message:
+                                "Some error occurred while changing the password, please try again later",
+                        });
+                    }
+
+                    if (!result) {
+                        return res.status(403).json({
+                            status: 6001,
+                            message: "Incorrect current password",
+                        });
+                    }
+
+                    bcrypt.hash(newPassword, 10, (error, hashedPassword) => {
+                        User.findOneAndUpdate(
+                            { _id: req.user },
+                            { "personal_info.password": hashedPassword }
+                        )
+                            .then(() => {
+                                return res.status(200).json({
+                                    status: 6000,
+                                    message: "Password changed",
+                                });
+                            })
+                            .catch(() => {
+                                return res.status(500).json({
+                                    status: 6001,
+                                    message:
+                                        "Some error occurred while saving the new password, please try again later",
+                                });
+                            });
+                    });
+                }
+            );
+        })
+        .catch((error) => {
+            return res.status(500).json({
                 status: 6001,
-                message:
-                    "You can't change the password because you logged in through Google",
+                message: error?.message,
             });
-        }
-
-        const isPasswordValid = await bcrypt.compare(
-            currentPassword,
-            user.personal_info.password
-        );
-
-        if (!isPasswordValid) {
-            return res.status(403).json({
-                status: 6001,
-                message: "Incorrect current password",
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        await User.findByIdAndUpdate(req.user, {
-            "personal_info.password": hashedPassword,
         });
-
-        return res.status(200).json({
-            status: 6000,
-            message: "Password changed successfully",
-        });
-    } catch (error) {
-        return res.status(500).json({
-            status: 6001,
-            message: error?.message,
-        });
-    }
 };
 
 module.exports = {

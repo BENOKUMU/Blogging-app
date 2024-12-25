@@ -1,4 +1,4 @@
-const User = require("../../../models/User.js");
+const User = require('../../../models/User.js');
 const Blog = require("../../../models/Blog.js");
 
 const searchUsers = async (req, res) => {

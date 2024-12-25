@@ -2,7 +2,7 @@
 const Notification = require('../../../models/Notification.js');
 
 const newNotifications = async (req, res) => {
-    const user_id = req.user.id;
+    const user_id = req.user;
 
     Notification.exists({
         notification_for: user_id,
