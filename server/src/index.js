@@ -45,11 +45,31 @@ admin.initializeApp({
 
 // Root route to test server
 app.get("/", (req, res) => {
-  res.send("Welcome to the backend server!");
+  console.log("The backend server is running 😍😍😍");
+  res.send(`
+    <html>
+      <body>
+        <h1>Welcome to the backend server!</h1>
+        <script>
+          console.log("The backend server is running");
+        </script>
+      </body>
+    </html>
+  `);
 });
 
 app.get("/hello", (req, res) => {
-  res.send("Hello");
+  console.log("The /hello route was accessed 💕💕💕💕");
+  res.send(`
+    <html>
+      <body>
+        <h1>Hello</h1>
+        <script>
+          console.log("The /hello route was accessed");
+        </script>
+      </body>
+    </html>
+  `);
 });
 
 // API routes
