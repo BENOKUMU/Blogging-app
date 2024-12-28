@@ -49,15 +49,15 @@ jobs:
         CPANEL_PASSWORD: ${{ secrets.GIT_CPANEL_PASSWORD }}
       run: |
         # Check if app.mjs is required
-        if [ -f "app.mjs" ]; then
-          echo "✅ app.mjs found in the root directory."
+        if [ -f "server/src/app.mjs" ]; then
+          echo "✅ server/src/app.mjs found in the root directory."
         else
-          echo "⚠️ app.mjs not found. Skipping app.mjs deployment."
+          echo "⚠️ server/src/app.mjs not found. Skipping app.mjs deployment."
         fi
 
         if [ -d "client/dist" ] && [ -f "package.json" ]; then
           echo "✅ Required files and directories exist. Proceeding with deployment."
-          zip -r deploy.zip client/dist package.json ${SERVER_JS:-}
+          zip -r deploy.zip client/dist package.json server/src/app.mjs
           echo "📦 Archive created successfully."
 
           echo "🚀 Starting upload to cPanel."
