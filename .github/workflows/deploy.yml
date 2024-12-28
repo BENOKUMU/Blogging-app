@@ -1,0 +1,51 @@
+name: Deploy to cPanel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: |
+        cd client
+        npm install
+        cd ../server
+        npm install
+
+    - name: Build client
+      run: |
+        cd client
+        npm run build
+
+    - name: Deploy to cPanel
+      env:
+        CPANEL_HOST: ${{ secrets.GIT_CPANEL_HOST }}
+        CPANEL_USER: ${{ secrets.GIT_CPANEL_USER }}
+        CPANEL_PASSWORD: ${{ secrets.GIT_CPANEL_PASSWORD }}
+      run: |
+        cd ..
+        zip -r deploy.zip client/dist server
+        curl -u $CPANEL_USER:$CPANEL_PASSWORD ftp://$CPANEL_HOST/public_html/ --upload-file deploy.zip
+        sshpass -p $CPANEL_PASSWORD ssh $CPANEL_USER@$CPANEL_HOST "unzip -o public_html/deploy.zip -d public_html/ && rm public_html/deploy.zip"
+      continue-on-error: false
+
+    - name: Deployment success message
+      if: success()
+      run: echo "🎉 Deployment to cPanel was successful! 🚀"
+
+    - name: Deployment failure message
+      if: failure()
+      run: echo "❌ Deployment to cPanel failed. Please check the logs for more details."
