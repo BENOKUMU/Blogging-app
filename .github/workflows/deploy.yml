@@ -48,11 +48,11 @@ jobs:
         CPANEL_USER: ${{ secrets.GIT_CPANEL_USER }}
         CPANEL_PASSWORD: ${{ secrets.GIT_CPANEL_PASSWORD }}
       run: |
-        # Check if server.js is required
-        if [ -f "server.js" ]; then
-          echo "✅ server.js found in the root directory."
+        # Check if app.mjs is required
+        if [ -f "app.mjs" ]; then
+          echo "✅ app.mjs found in the root directory."
         else
-          echo "⚠️ server.js not found. Skipping server.js deployment."
+          echo "⚠️ app.mjs not found. Skipping app.mjs deployment."
         fi
 
         if [ -d "client/dist" ] && [ -f "package.json" ]; then
