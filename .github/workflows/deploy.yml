@@ -50,8 +50,8 @@ jobs:
       run: |
         if [ -d "client/dist" ] && [ -f "package.json" ]; then
           echo "✅ Required files and directories exist. Proceeding with deployment."
-          zip -r deploy.zip client/dist package.json server.js node_modules
-          curl -u $CPANEL_USER:$CPANEL_PASSWORD ftp://$CPANEL_HOST/public_html/ --upload-file deploy.zip
+          zip -r deploy.zip client/dist package.json server.js
+          curl --max-time 600 -u $CPANEL_USER:$CPANEL_PASSWORD ftp://$CPANEL_HOST/public_html/ --upload-file deploy.zip
           sshpass -p $CPANEL_PASSWORD ssh $CPANEL_USER@$CPANEL_HOST "unzip -o public_html/deploy.zip -d public_html/ && rm public_html/deploy.zip"
         else
           echo "❌ Required files or directories are missing. Deployment aborted."
