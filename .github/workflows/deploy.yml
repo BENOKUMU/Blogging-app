@@ -37,10 +37,15 @@ jobs:
         CPANEL_PASSWORD: ${{ secrets.GIT_CPANEL_PASSWORD }}
       run: |
         cd ..
-        zip -r deploy.zip client/dist server
-        curl -u $CPANEL_USER:$CPANEL_PASSWORD ftp://$CPANEL_HOST/public_html/ --upload-file deploy.zip
-        sshpass -p $CPANEL_PASSWORD ssh $CPANEL_USER@$CPANEL_HOST "unzip -o public_html/deploy.zip -d public_html/ && rm public_html/deploy.zip"
-      continue-on-error: false
+        if [ -d "client/dist" ] && [ -d "server" ]; then
+          zip -r deploy.zip client/dist server
+          curl -u $CPANEL_USER:$CPANEL_PASSWORD ftp://$CPANEL_HOST/public_html/ --upload-file deploy.zip
+          sshpass -p $CPANEL_PASSWORD ssh $CPANEL_USER@$CPANEL_HOST "unzip -o public_html/deploy.zip -d public_html/ && rm public_html/deploy.zip"
+        else
+          echo "❌ Required directories do not exist. Deployment aborted."
+          exit 1
+        fi
+      shell: /usr/bin/bash -e {0}
 
     - name: Deployment success message
       if: success()
