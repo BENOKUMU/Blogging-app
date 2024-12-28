@@ -48,14 +48,16 @@ jobs:
         CPANEL_USER: ${{ secrets.GIT_CPANEL_USER }}
         CPANEL_PASSWORD: ${{ secrets.GIT_CPANEL_PASSWORD }}
       run: |
-        if [ ! -f "server.js" ]; then
-          echo "❌ server.js not found in the root directory. Deployment aborted."
-          exit 1
+        # Check if server.js is required
+        if [ -f "server.js" ]; then
+          echo "✅ server.js found in the root directory."
+        else
+          echo "⚠️ server.js not found. Skipping server.js deployment."
         fi
 
         if [ -d "client/dist" ] && [ -f "package.json" ]; then
           echo "✅ Required files and directories exist. Proceeding with deployment."
-          zip -r deploy.zip client/dist package.json server.js
+          zip -r deploy.zip client/dist package.json ${SERVER_JS:-}
           echo "📦 Archive created successfully."
 
           echo "🚀 Starting upload to cPanel."
