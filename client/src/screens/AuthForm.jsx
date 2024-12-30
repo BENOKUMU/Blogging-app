@@ -32,7 +32,7 @@ const AuthForm = ({ type }) => {
     const handleSubmit = (event) => {
         event.preventDefault()
 
-        const apiRoute = type === "sign-in" ? "/signin" : "signup"
+        const apiRoute = type === "sign-in" ? "/signin" : "/signup"
 
         // the `idFormElement` is the id of the form (it is an hack instead of using ref.current)
         const form = new FormData(idFormElement)
