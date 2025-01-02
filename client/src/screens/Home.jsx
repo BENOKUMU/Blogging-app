@@ -191,7 +191,7 @@ const Home = () => {
           >
             <div className="flex flex-col gap-10">
               <div>
-                <h1 className="font-medium text-xl mb-8 text-white">
+                <h1 className="font-medium text-xl mb-8 text-gray-800">
                   Stories from all interests
                 </h1>
                 <div className="flex gap-3 flex-wrap">
