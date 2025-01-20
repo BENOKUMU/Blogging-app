@@ -22,6 +22,10 @@ import Blogs from "../screens/admin/Blogs";
 import Users from "../screens/admin/Users";
 import Reports from "../screens/admin/Reports";
 import AdminNav from "../components/admin/AdminNav";
+import About from "../screens/NavPages/About";      // Import new About page
+import Contact from "../screens/NavPages/Contact";  // Import new Contact page
+import Terms from "../screens/NavPages/TermsPage";      // Import new Terms page
+import Privacy from "../screens/NavPages/PrivacyPage";  // Import new Privacy page
 
 const Routes_ = () => {
   return (
@@ -31,6 +35,10 @@ const Routes_ = () => {
         <Route path="/editor/:blogId" element={<Editor />} />
         <Route path="/" element={<Navbar />}>
           <Route index element={<Home />} />
+          <Route path="about" element={<About />} />        {/* About page */}
+          <Route path="contact" element={<Contact />} />    {/* Contact page */}
+          <Route path="terms" element={<Terms />} />        {/* Terms page */}
+          <Route path="privacy" element={<Privacy />} />    {/* Privacy page */}
           <Route path="dashboard" element={<SideNav />}>
             <Route path="notifications" element={<Notifications />} />
             <Route path="blogs" element={<ManageBlogs />} />
